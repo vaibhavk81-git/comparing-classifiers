@@ -22,48 +22,76 @@ Four supervised classifiers are built and compared:
 
 ## Business Problem
 
-The bank runs phone campaigns to promote long-term deposits, but only about 11 percent of customers say “yes.”
-By identifying which customers are most likely to subscribe, the bank can:
+The bank's problem is straightforward: they conducted telephone-based marketing campaigns to promote term deposits, but only about 11% of the target audience actually subscribed. 
+That's a lot of wasted time and money. My goal was to build models that could:
+1. Better identify customers likely to subscribe
+2. Help the bank avoid calling people unlikely to convert
+3. Make their marketing campaigns more cost-effective
 
-1. Focus calls on high-probability leads.
-2. Reduce wasted time and cost.
-3. Schedule campaigns when conditions are most favorable.
 
 ---
 
-## Dataset
+## Dataset Summary
 
-* **Source:** [UCI Bank Marketing Dataset](https://archive.ics.uci.edu/ml/datasets/bank+marketing)
-* **Rows:** 41,188 customers
-* **Target:** `y` – *yes* (subscribed) / *no* (not subscribed)
-* **Imbalance:** ≈ 89 % no  vs  11 % yes
-* **Key features:** age, job, marital status, education, previous campaign results, economic indicators, and timing (month and day of week).
+* **Source:** [UCI Machine Learning Repository – Bank Marketing Dataset](https://archive.ics.uci.edu/ml/datasets/bank+marketing)
+* **Records:** 41,188
+* **Features:** 20 independent variables + 1 target (`y`)
+* **Target Variable:** `y` (binary) – *yes* (subscribed) or *no* (not subscribed)
+* **Class Imbalance:** 89% non-subscribers vs. 11% subscribers
+
+### Key Features
+
+| Feature                                     | Description             |
+| ------------------------------------------- | ----------------------- |
+| `age`, `job`, `marital`, `education`        | Demographic information |
+| `default`, `housing`, `loan`                | Financial profile       |
+| `contact`, `month`, `day_of_week`           | Campaign details        |
+| `campaign`, `pdays`, `previous`, `poutcome` | Past contact results    |
+| `emp.var.rate`, `euribor3m`, `nr.employed`  | Economic indicators     |
 
 ---
 
 ## Methodology
 
-1. **Understand the data** – checked types, missing values, and class imbalance.
-2. **Prepare the data** – encoded categorical fields and scaled numeric ones.
-3. **Split the data** – 70 % train / 30 % test with stratified sampling.
-4. **Model building** – trained Logistic Regression, KNN, Decision Tree, and SVM models.
-5. **Hyperparameter tuning** – used GridSearchCV with cross-validation (scoring = F1).
-6. **Evaluate models** – looked at accuracy, precision, recall, F1, and ROC-AUC.
+### Modeling Approach
+
+The notebook follows the **CRISP-DM framework**:
+
+1. Business Understanding
+2. Data Understanding
+3. Data Preparation
+4. Modeling
+5. Evaluation
+6. Deployment and Recommendations
+
+### Algorithms Compared
+
+* Logistic Regression
+* K-Nearest Neighbors (KNN)
+* Decision Tree
+* Support Vector Machine (SVM)
+
+### Model Tuning
+
+Each model was fine-tuned using **GridSearchCV** and **cross-validation**, with **F1-score** as the primary metric due to class imbalance.
 
 ---
 
-## Results
+## Results Summary
 
-| Model                          | Test Accuracy | Recall (Subscribed) | F1 (Subscribed) | Comment                           |
-| ------------------------------ | ------------- | ------------------- | --------------- | --------------------------------- |
-| Logistic Regression (Balanced) | **83.2 %**    | **0.64**            | **0.46**        | Catches the most real subscribers |
-| KNN (Tuned)                    | 88.4 %        | 0.29                | 0.36            | Good accuracy but lower recall    |
-| Decision Tree (Tuned)          | 89.7 %        | 0.29                | 0.39            | Interpretable; mild overfitting   |
-| SVM (Tuned)                    | 89.1 %        | 0.27                | 0.35            | Stable but less sensitive         |
+| Model                              | Test Accuracy | Recall (Subscribed) | F1 (Subscribed) | Key Takeaway                                           |
+| ---------------------------------- | ------------- | ------------------- | --------------- | ------------------------------------------------------ |
+| **Logistic Regression (Balanced)** | **83.2%**     | **0.64**            | **0.46**        | Best recall; identifies the most potential subscribers |
+| **KNN (Tuned)**                    | 88.4%         | 0.29                | 0.36            | Strong accuracy; moderate overfitting                  |
+| **Decision Tree (Tuned)**          | 89.7%         | 0.29                | 0.39            | Interpretable, solid accuracy                          |
+| **SVM (Tuned)**                    | 89.1%         | 0.27                | 0.35            | Stable, precise, lower recall                          |
 
-**Takeaway:**
-Accuracy alone isn’t enough for an imbalanced dataset.
-The **balanced Logistic Regression** model gives the best recall, meaning it identifies far more of the actual subscribers—exactly what the marketing team needs.
+
+### Conclusion
+
+While Decision Tree and SVM achieved slightly higher overall accuracy, **Logistic Regression with class balancing** was the most aligned with the business goal — identifying the maximum number of likely subscribers.
+It achieved the **highest recall (0.64)** and a balanced F1-score, ensuring more potential customers are reached.
+
 
 ---
 
@@ -71,7 +99,7 @@ The **balanced Logistic Regression** model gives the best recall, meaning it ide
 
 Feature importance analysis shows that customer history and timing are critical:
 
-* **Previous Campaign Outcome (`poutcome`)** – People who said “yes” before are far likelier to subscribe again.
+* **Previous Campaign Outcome (`poutcome`)** – People who said “yes” before are far more likely to subscribe again.
 * **Number of Contacts (`campaign`)** – Too many calls hurt conversion; quality beats quantity.
 * **Economic Indicators (`emp.var.rate`, `euribor3m`, `nr.employed`)** – Stable conditions boost performance.
 * **Month of Contact (`month`)** – March, June, September, and December perform best.
